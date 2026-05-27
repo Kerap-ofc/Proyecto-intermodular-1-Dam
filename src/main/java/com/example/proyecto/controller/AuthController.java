@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class AuthController {
@@ -18,10 +20,24 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
-@GetMapping("/perfil")
-public String revisarPerfil(HttpSession session) {
-    // Forzamos el return temporalmente para ver si tu login.html responde
-    return "login"; 
+@GetMapping({"/reservas", "/perfil"})
+public String revisarReservas(HttpSession session, Model model) {
+    // 1. EL CANDADO: Comprobamos si el usuario tiene la sesión iniciada
+    User usuarioLogueado = (User) session.getAttribute("usuarioSesion");
+    
+    if (usuarioLogueado == null) {
+        return "login"; // Si no está logueado, lo mandamos al login de cabeza
+    }
+    
+    // 2. Pasamos el usuario a la vista
+    model.addAttribute("usuario", usuarioLogueado);
+    
+    // 3. Mandamos listas vacías simuladas para que el HTML cargue sin tocar la BD
+    model.addAttribute("libros", new java.util.ArrayList<>());
+    model.addAttribute("musica", new java.util.ArrayList<>());
+    
+
+    return "perfil-usuario"; 
 }
 
     @PostMapping("/login")

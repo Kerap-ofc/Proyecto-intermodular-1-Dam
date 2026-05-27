@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Perfil - Reservas</title>
+    <link rel="stylesheet" href="/css/Perfil-usuario.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="/images/Captura_desde_2026-05-26_20-13-17-removebg-preview.png" alt="Logo">
+        </div>
+        <img src="/images/Captura_desde_2026-05-26_20-10-44.png" class="avatar-top" alt="Perfil">
+    </header>
+
+    <div class="toolbar">
+        <div class="search-box">
+            🔍 Buscar
+        </div>
+        <div class="toolbar-btn">Ordenar</div>
+        <div class="toolbar-btn">Filtrar</div>
+    </div>
+
+    <div class="cards-container">
+
+        <div class="card-green" th:each="libro : ${libros}">
+            <div>
+                <div class="main-info" th:text="${libro.genre}">Género</div>
+                <div class="footer-info">
+                    Fecha de descarga: <span th:text="${#strings.substring(libro.reservation_date,0,10)}">00/00/00</span>
+                </div>
+            </div>
+            
+            <div>
+                <div class="secondary-info" th:text="${libro.author}">Autor</div>
+                <div class="main-info" th:text="${libro.title}">Título</div>
+                <div class="secondary-info">Año: <span th:text="${libro.release_year}">2026</span></div>
+                <div class="footer-info">
+                    Usuario: <span th:text="${session.usuarioSesion.username}">nombre_usuario</span>
+                </div>
+            </div>
+
+            <div class="desc-text" th:text="${libro.description != null ? #strings.abbreviate(libro.description, 10) : 'Desc'}">
+                Desc
+            </div>
+        </div>
+
+        <div class="card-green" th:each="m : ${musica}">
+            <div>
+                <div class="main-info" th:text="${m.artist_or_band}">Grupo</div>
+                <div class="footer-info">
+                    Fecha de descarga: <span th:text="${#strings.substring(m.reservation_date,0,10)}">00/00/00</span>
+                </div>
+            </div>
+            
+            <div>
+                <div class="secondary-info" th:text="${m.title}">Nombre</div>
+                <div class="main-info" th:text="${m.genre}">Género</div>
+                <div class="secondary-info">Año: <span th:text="${m.release_year}">2026</span></div>
+                <div class="footer-info">
+                    Usuario: <span th:text="${session.usuarioSesion.username}">nombre_usuario</span>
+                </div>
+            </div>
+
+            <div class="desc-text" style="font-size: 35px; color: #555;">
+                🎵 Audio
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-line"></div>
+
+</body>
+</html>
