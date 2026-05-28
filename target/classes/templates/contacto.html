@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sifitecha - Contacto</title>
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            padding-bottom: 90px;
+        }
+        
+        .logo-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo-header img {
+            height: 80px;
+        }
+
+        .contact-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #e2fbd7; /* Tu verde claro de fondo */
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .contact-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #111;
+        }
+
+        .contact-subtitle {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        /* Enlaces estilo tus tarjetas verdes, interactivos y limpios */
+        .contact-link-card {
+            background-color: #98eb9a; /* Tu verde clásico */
+            border-radius: 20px;
+            padding: 18px 25px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: #000000;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .contact-link-card:hover {
+            transform: scale(1.02);
+            background-color: #88db8a;
+        }
+
+        .network-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-action-oval {
+            background-color: #ffffff;
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            color: #111;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Barra inferior fija */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background-color: #e2fbd7;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+        .bottom-nav a {
+            text-decoration: none;
+            color: #111;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 5px 20px;
+            border-radius: 20px;
+        }
+        .bottom-nav a:hover {
+            background-color: #98eb9a;
+        }
+        .bottom-nav a.nav-logout {
+            color: #ffffff;
+            background-color: #ff3333;
+        }
+        .bottom-nav a.nav-logout:hover {
+            background-color: #cc0000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logo-header">
+        <img src="/images/Captura_desde_2026-05-26_20-13-17-removebg-preview.png" alt="Logo">
+    </div>
+
+    <div class="contact-container">
+        <div class="contact-title">¡Contáctame!</div>
+        <div class="contact-subtitle">¿Tienes alguna duda o sugerencia sobre Sifitecha? Encuéntrame aquí:</div>
+        <a href="https://github.com/Kerap-ofc" target="_blank" class="contact-link-card">
+            <div class="network-name">💻 GitHub</div>
+            <div class="btn-action-oval">Ver Perfil</div>
+        </a>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="/">Principio</a>
+        <a href="/libros">Libros</a>
+        <a href="/musica">Música</a>
+        <a href="/subir-musica">Subir Cancion</a>
+        <a href="/subir-libro">Subir Libro</a>
+    </div>
+
+</body>
+</html>

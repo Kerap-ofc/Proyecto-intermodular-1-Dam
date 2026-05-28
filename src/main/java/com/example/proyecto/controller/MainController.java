@@ -353,5 +353,78 @@ public class MainController {
             return "subir-musica";
         }
     }
+    // ========================================================
+    // RUTA PRINCIPAL PANEL DE REGISTROS (EXCLUSIVO ADMIN)
+    // ========================================================
+    @GetMapping("/admin/registros")
+    public String abrirPanelRegistros(HttpSession session, Model model) {
+        // Candado de seguridad para que nadie pueda saltarse la URL
+        User usuarioActivo = (User) session.getAttribute("usuarioSesion");
+        if (usuarioActivo == null || !usuarioActivo.getIsAdmin()) {
+            return "redirect:/login";
+        }
+
+        // 1. Consultamos todos los libros existentes (únicos)
+        List<Map<String, Object>> libros = jdbcTemplate.queryForList("SELECT * FROM books");
+        
+        // 2. Consultamos todas las canciones existentes (únicas)
+        List<Map<String, Object>> canciones = jdbcTemplate.queryForList("SELECT * FROM music");
+        
+        // 3. Consultamos todos los usuarios (excepto el administrador logueado actual para no autoborrarse)
+        List<Map<String, Object>> usuarios = jdbcTemplate.queryForList("SELECT id, username, firstname, lastname, email FROM users WHERE id != ?", usuarioActivo.getId());
+
+        // Enviamos las 3 colecciones completas a la plantilla
+        model.addAttribute("libros", libros);
+        model.addAttribute("canciones", canciones);
+        model.addAttribute("usuarios", usuarios);
+
+        return "registros"; // Devuelve registros.html
+    }
+
+    // ========================================================
+    // ACCIONES POST DE ELIMINACIÓN DEFINITIVA EN BD
+    // ========================================================
+
+    @PostMapping("/admin/borrar-libro")
+    public String adminBorrarLibro(@RequestParam("id") Long id, HttpSession session) {
+        User usuarioActivo = (User) session.getAttribute("usuarioSesion");
+        if (usuarioActivo == null || !usuarioActivo.getIsAdmin()) return "redirect:/login";
+
+        // Limpieza en cascada manual de registros descargados para evitar fallos de Foreign Key
+        jdbcTemplate.update("DELETE FROM book_reservations WHERE book_id = ?", id);
+        jdbcTemplate.update("DELETE FROM books WHERE id = ?", id);
+        
+        return "redirect:/admin/registros";
+    }
+
+    @PostMapping("/admin/borrar-musica")
+    public String adminBorrarMusica(@RequestParam("id") Long id, HttpSession session) {
+        User usuarioActivo = (User) session.getAttribute("usuarioSesion");
+        if (usuarioActivo == null || !usuarioActivo.getIsAdmin()) return "redirect:/login";
+
+        // Limpieza en cascada manual de descargas de música
+        jdbcTemplate.update("DELETE FROM music_reservations WHERE music_id = ?", id);
+        jdbcTemplate.update("DELETE FROM music WHERE id = ?", id);
+        
+        return "redirect:/admin/registros";
+    }
+
+    @PostMapping("/admin/borrar-usuario")
+    public String adminBorrarUsuario(@RequestParam("id") Long id, HttpSession session) {
+        User usuarioActivo = (User) session.getAttribute("usuarioSesion");
+        if (usuarioActivo == null || !usuarioActivo.getIsAdmin()) return "redirect:/login";
+
+        // Limpieza de todos los historiales asociados al usuario antes de borrarlo de la tabla users
+        jdbcTemplate.update("DELETE FROM book_reservations WHERE user_id = ?", id);
+        jdbcTemplate.update("DELETE FROM music_reservations WHERE user_id = ?", id);
+        jdbcTemplate.update("DELETE FROM users WHERE id = ?", id);
+        
+        return "redirect:/admin/registros";
+    }
+
+    @GetMapping("/contacto")
+    public String mostrarContacto() {
+        return "contacto"; // Busca templates/contacto.html
+    }
 
 }

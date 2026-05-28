@@ -23,9 +23,11 @@
 
         <nav>
             <a href="/reservas" class="nav-btn">Mis Descargas</a>
-            <a href="/subir-musica" class="nav-btn">Subir Musica</a>
+            <a href="/subir-musica" class="nav-btn">Subir Música</a>
             <a href="/subir-libro" class="nav-btn">Subir libros</a>
-            <a href="#" class="nav-btn">CABECERA</a>
+
+            <a th:if="${session.usuarioSesion != null && session.usuarioSesion.isAdmin}" href="/admin/registros"
+                class="nav-btn" style="background-color: #2c3e50; color: #ffffff;">Registros</a>
         </nav>
     </header>
 
@@ -56,9 +58,7 @@
     </main>
 
     <footer>
-        <a href="#" class="footer-item">Copyright</a>
-        <a href="#" class="footer-item">Política de privacidad</a>
-        <a href="#" class="footer-item">Contáctanos</a>
+        <a th:href="@{/contacto}" class="footer-item">Contáctanos</a>
     </footer>
 
 </body>

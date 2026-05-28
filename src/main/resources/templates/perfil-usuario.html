@@ -97,12 +97,13 @@
         </div>
 
     </div>
-
+    <!-- BARRA INFERIOR DE NAVEGACIÓN FIJA CON CERRAR SESIÓN -->
     <div class="bottom-nav">
-        <a th:href="@{/}">Principio</a>
-        <a th:href="@{/subir-musica}">Subir Cancion</a>
-        <a th:href="@{/subir-libro}" class="active">Subir Libro</a>
+        <a href="/">Principio</a>
+        <a href="/subir-musica">Subir Cancion</a>
+        <a href="/subir-libro">Subir Libro</a>
+        <!-- BOTÓN DE CERRAR SESIÓN INTEGRADO -->
+        <a href="/logout" class="nav-logout">Cerrar Sesión 🚪</a>
     </div>
-
 </body>
 </html>

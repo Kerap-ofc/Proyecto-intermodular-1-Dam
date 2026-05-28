@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sifitecha - Panel de Registros</title>
+    <link rel="stylesheet" href="/css/registros.css">
+</head>
+<body>
+
+    <div class="logo-header">
+        <img src="/images/Captura_desde_2026-05-26_20-13-17-removebg-preview.png" alt="Logo">
+    </div>
+
+    <div class="panel-title"> PANEL GLOBAL DE REGISTROS</div>
+
+    <div class="admin-grid">
+        
+        <div>
+            <div class="section-title"> Libros Almacenados</div>
+            <div class="list-container">
+                <div th:each="libro : ${libros}" class="item-wrapper">
+                    <div class="info-row-card">
+                        <div class="txt-big" th:text="${libro.genre}">Género</div>
+                        <div class="txt-medium" th:text="${libro.author}">Autor</div>
+                        <div class="txt-medium" th:text="${libro.title}">Título</div>
+                        <div class="txt-normal">Registro Informativo</div>
+                        <div class="txt-small">Fila Base de Datos</div>
+                        <div class="txt-medium" th:text="${libro.release_year}">Año</div>
+                    </div>
+                    <form th:action="@{/admin/borrar-libro}" method="POST" class="delete-form">
+                        <input type="hidden" name="id" th:value="${libro.id}">
+                        <button type="submit" class="btn-circular-delete" title="Eliminar Libro de raíz">🗑️</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="section-title">🎵 Canciones Almacenadas</div>
+            <div class="list-container">
+                <div th:each="cancion : ${canciones}" class="item-wrapper">
+                    <div class="info-row-card" style="background-color: #a3efa5;">
+                        <div class="txt-big" th:text="${cancion.genre}">Género</div>
+                        <div class="txt-medium" th:text="${cancion.artist_or_band}">Artista</div>
+                        <div class="txt-medium" th:text="${cancion.title}">Título</div>
+                        <div class="txt-normal">Registro Informativo</div>
+                        <div class="txt-small">Fila Base de Datos</div>
+                        <div class="txt-medium" th:text="${cancion.release_year}">Año</div>
+                    </div>
+                    <form th:action="@{/admin/borrar-musica}" method="POST" class="delete-form">
+                        <input type="hidden" name="id" th:value="${cancion.id}">
+                        <button type="submit" class="btn-circular-delete" title="Eliminar Música de raíz">🗑️</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <div class="section-title"> Usuarios Registrados</div>
+            <div class="list-container">
+                <div th:each="user : ${usuarios}" class="item-wrapper">
+                    <div class="user-row-card">
+                        <div class="txt-medium" th:text="'@' + ${user.username}">Username</div>
+                        <div class="txt-normal" th:text="${user.firstname} + ' ' + ${user.lastname}">Nombre Completo</div>
+                        <div class="txt-small" th:text="${user.email}">Email</div>
+                    </div>
+                    <form th:action="@{/admin/borrar-usuario}" method="POST" class="delete-form">
+                        <input type="hidden" name="id" th:value="${user.id}">
+                        <button type="submit" class="btn-circular-delete" title="Eliminar Usuario del sistema">🗑️</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <a href="/" class="btn-back"> Volver a Inicio</a>
+
+</body>
+</html>
