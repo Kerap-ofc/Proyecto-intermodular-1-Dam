@@ -12,7 +12,7 @@
             <img src="/images/Captura_desde_2026-05-26_20-13-17-removebg-preview.png" alt="Logo">
         </div>
 
-        <div class="error-message" th:if="${error}" th:text="${error}"></div>
+        <div class="error-message" th:if="${error}" th:text="${error}" style="color: #e74c3c; font-weight: bold; margin-bottom: 15px; text-align: center;"></div>
 
         <form th:action="@{/login}" method="post">
             <div class="input-group">

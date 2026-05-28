@@ -21,23 +21,44 @@ public class AuthController {
     private UserRepository userRepository;
 
 @GetMapping({"/reservas", "/perfil"})
-public String revisarReservas(HttpSession session, Model model) {
-    // 1. EL CANDADO: Comprobamos si el usuario tiene la sesión iniciada
-    User usuarioLogueado = (User) session.getAttribute("usuarioSesion");
+public String revisarReservas(
+        @RequestParam(name = "buscar", required = false, defaultValue = "") String buscar,
+        @RequestParam(name = "orden", required = false, defaultValue = "desc") String orden,
+        @RequestParam(name = "filtro", required = false, defaultValue = "todos") String filtro,
+        HttpSession session, Model model) {
     
+    // Candado de sesión original de tu GitHub
+    User usuarioLogueado = (User) session.getAttribute("usuarioSesion");
     if (usuarioLogueado == null) {
-        return "login"; // Si no está logueado, lo mandamos al login de cabeza
+        return "login"; 
+    }
+    model.addAttribute("usuario", usuarioLogueado);
+
+    // Listas vacías listas para llenarse con los datos filtrados de MySQL
+    List<Map<String, Object>> libros = new java.util.ArrayList<>();
+    List<Map<String, Object>> musica = new java.util.ArrayList<>();
+
+    Integer userId = usuarioLogueado.getId();
+
+    // FILTRAR: Dependiendo de lo que pulse el usuario, llamamos a tus nuevas consultas de buscar y ordenar
+    if (filtro.equals("todos") || filtro.equals("libros")) {
+        libros = userRepository.findBookReservations(userId, buscar, orden);
     }
     
-    // 2. Pasamos el usuario a la vista
-    model.addAttribute("usuario", usuarioLogueado);
-    
-    // 3. Mandamos listas vacías simuladas para que el HTML cargue sin tocar la BD
-    model.addAttribute("libros", new java.util.ArrayList<>());
-    model.addAttribute("musica", new java.util.ArrayList<>());
-    
+    if (filtro.equals("todos") || filtro.equals("musica")) {
+        musica = userRepository.findMusicReservations(userId, buscar, orden);
+    }
 
-    return "perfil-usuario"; 
+    // Enviamos los resultados limpios a las tarjetas de Thymeleaf
+    model.addAttribute("libros", libros);
+    model.addAttribute("musica", musica);
+
+    // DEVOLVEMOS LOS ESTADOS: Esto es vital para que el HTML sepa qué botón está pulsado
+    model.addAttribute("buscarActual", buscar);
+    model.addAttribute("ordenActual", orden);
+    model.addAttribute("filtroActual", filtro);
+
+    return "perfil-usuario";
 }
 
     @PostMapping("/login")

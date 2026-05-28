@@ -14,13 +14,41 @@
         <img src="/images/Captura_desde_2026-05-26_20-10-44.png" class="avatar-top" alt="Perfil">
     </header>
 
-    <div class="toolbar">
-        <div class="search-box">
-            🔍 Buscar
+<div class="toolbar" style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 50px;">
+            
+            <form th:action="@{/reservas}" method="get" style="display: flex; align-items: center; gap: 5px; flex-grow: 1;">
+                <input type="hidden" name="filtro" th:value="${filtroActual ?: 'todos'}">
+                <input type="hidden" name="orden" th:value="${ordenActual ?: 'desc'}">
+                
+                <input type="text" name="buscar" th:value="${buscarActual}" class="input-buscar-oval" placeholder="Buscar por título..." style="border-radius: 50px; padding: 8px 15px; border: 1px solid #2ecc71; background: transparent; color: white;">
+                <button type="submit" class="btn-icon-oval" style="background: #2ecc71; border: none; border-radius: 50px; color: white; padding: 8px 15px; cursor: pointer;">
+                    <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                </button>
+            </form>
+
+            <a th:href="@{/reservas(buscar=${buscarActual ?: ''}, filtro=${filtroActual ?: 'todos'}, orden=${(ordenActual ?: 'desc') == 'desc' ? 'asc' : 'desc'})}" 
+               class="btn-icon-oval" 
+               style="background: #34495e; border-radius: 50px; color: white; padding: 8px 15px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+               <i class="fa-solid" th:classappend="${(ordenActual ?: 'desc') == 'asc' ? 'fa-arrow-down-short-wide' : 'fa-arrow-up-wide-short'}"></i>
+               <span>Ordenar</span>
+            </a>
+
+            <div class="filter-group" style="display: flex; background: rgba(0,0,0,0.2); border-radius: 50px; padding: 3px;">
+                <a th:href="@{/reservas(buscar=${buscarActual ?: ''}, orden=${ordenActual ?: 'desc'}, filtro='todos')}" 
+                   th:style="${(filtroActual ?: 'todos') == 'todos' ? 'background: #2ecc71; color: white;' : 'color: #bbb;'}"
+                   style="padding: 5px 15px; border-radius: 50px; text-decoration: none; font-size: 14px; transition: 0.3s;">Todos</a>
+                
+                <a th:href="@{/reservas(buscar=${buscarActual ?: ''}, orden=${ordenActual ?: 'desc'}, filtro='libros')}" 
+                   th:style="${(filtroActual ?: 'todos') == 'libros' ? 'background: #2ecc71; color: white;' : 'color: #bbb;'}"
+                   style="padding: 5px 15px; border-radius: 50px; text-decoration: none; font-size: 14px; transition: 0.3s;">Libros</a>
+                
+                <a th:href="@{/reservas(buscar=${buscarActual ?: ''}, orden=${ordenActual ?: 'desc'}, filtro='musica')}" 
+                   th:style="${(filtroActual ?: 'todos') == 'musica' ? 'background: #2ecc71; color: white;' : 'color: #bbb;'}"
+                   style="padding: 5px 15px; border-radius: 50px; text-decoration: none; font-size: 14px; transition: 0.3s;">Música</a>
+            </div>
+            
+            <a href="/" style="color: #2ecc71; font-size: 20px; margin-left: 10px;"><i class="fa-solid fa-house"></i></a>
         </div>
-        <div class="toolbar-btn">Ordenar</div>
-        <div class="toolbar-btn">Filtrar</div>
-    </div>
 
     <div class="cards-container">
 
