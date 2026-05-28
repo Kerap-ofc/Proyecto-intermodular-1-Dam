@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sifitecha - Biblioteca de Libros</title>
+    <link rel="stylesheet" href="/css/libros.css">
+</head>
+<body>
+
+    <div class="logo-header">
+        <img src="/images/Captura_desde_2026-05-26_20-13-17-removebg-preview.png" alt="Logo">
+    </div>
+
+    <div class="search-bar-container">
+        🔍 Buscar
+    </div>
+
+    <div th:if="${param.error_descarga}" style="color: #e74c3c; text-align: center; font-weight: bold; margin-bottom: 25px;">
+        ⚠️ No se pudo procesar la descarga de este libro. Revisa las tablas en Docker.
+    </div>
+
+<div class="books-list">
+        
+        <a th:each="libro : ${libros}" th:href="@{/descargar-libro(id=${libro.id})}" class="book-row-card">
+            
+            <div class="txt-big" th:text="${libro.genre}">Género</div>
+            <div class="txt-medium" th:text="${libro.author}">Autor</div>
+            <div class="txt-medium" th:text="${libro.title}">Título</div>
+            <div class="txt-desc">Desc</div>
+            
+            <div class="txt-normal">Fecha de descarga</div>
+            <div class="txt-small" th:text="${usuarioNombre}">Nombre usuario</div>
+            <div class="txt-medium" th:text="${libro.release_year}">Fecha de lanzamiento</div>
+            
+            <div class="txt-small" style="text-align: right; font-style: italic;" th:text="${libro.description}">Descripción</div>
+        </a>
+
+    </div>
+
+    <div class="bottom-nav">
+        <a th:href="@{/}">Principio</a>
+        <a th:href="@{/subir-musica}">Subir Cancion</a>
+        <a th:href="@{/subir-libro}">Subir Libro</a>
+    </div>
+
+</body>
+</html>

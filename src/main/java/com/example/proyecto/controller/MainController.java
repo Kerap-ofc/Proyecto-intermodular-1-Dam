@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class MainController {
@@ -24,6 +26,147 @@ public class MainController {
     @GetMapping("/")
     public String home() {
         return "Principio"; // Busca tu archivo templates/Principio.html
+    }
+
+    // 1. Carga la pantalla verde con la lista de libros de MySQL
+// ========================================================
+    // SECCIÓN TOTALMENTE NUEVA: PÁGINA DE LIBROS Y RESERVAS
+    // ========================================================
+
+    // 1. Carga la pantalla verde con la lista de libros y las fechas de este usuario
+@GetMapping("/libros")
+    public String mostrarPaginaLibros(HttpSession session, Model model) {
+        // Candado de seguridad obligatorio
+        User usuarioActivo = (User) session.getAttribute("usuarioSesion");
+        if (usuarioActivo == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            // SÚPER SIMPLE: Traemos solo los libros reales de la tabla 'books' sin duplicados
+            String sql = "SELECT * FROM books";
+            java.util.List<java.util.Map<String, Object>> listaLibros = jdbcTemplate.queryForList(sql);
+            
+            model.addAttribute("libros", listaLibros);
+            model.addAttribute("usuarioNombre", usuarioActivo.getUsername());
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al cargar libros: " + e.getMessage());
+        }
+
+        return "libros";
+    }
+
+    // 2. Registra la descarga en la base de datos y despacha el archivo PDF
+   @GetMapping("/descargar-libro")
+    public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> descargarYReservar(
+            @RequestParam("id") Long bookId, HttpSession session) {
+        
+        User usuarioActivo = (User) session.getAttribute("usuarioSesion");
+        if (usuarioActivo == null) {
+            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).build();
+        }
+
+        try {
+            // 1. Insertar la reserva (Ya funciona perfecto en tu base de datos)
+            java.time.LocalDateTime fechaActual = java.time.LocalDateTime.now();
+            String sqlReserva = "INSERT INTO book_reservations (user_id, book_id, reservation_date) VALUES (?, ?, ?)";
+            jdbcTemplate.update(sqlReserva, usuarioActivo.getId(), bookId, fechaActual);
+
+            // 2. Buscar la ruta guardada en la base de datos (Ej: /uploads/pdfs/archivo.pdf)
+            String sqlFichero = "SELECT pdf_path FROM books WHERE id = ?";
+            String pdfPathBd = jdbcTemplate.queryForObject(sqlFichero, String.class, bookId);
+
+            // 3. Extraemos el nombre del archivo para buscarlo en la carpeta física real
+            String nombreFichero = pdfPathBd.substring(pdfPathBd.lastIndexOf("/") + 1);
+            
+            // Apuntamos a la carpeta física real "uploads/libros/" donde se guardan tus PDFs
+            java.nio.file.Path rutaArchivoFisico = java.nio.file.Paths.get("uploads/libros").resolve(nombreFichero).normalize();
+            org.springframework.core.io.Resource recurso = new org.springframework.core.io.UrlResource(rutaArchivoFisico.toUri());
+
+            if (!recurso.exists()) {
+                // Si el archivo no existe físicamente en la carpeta, nos avisa con un error de servidor limpio
+                return org.springframework.http.ResponseEntity.notFound().build();
+            }
+
+            // 4. Despachamos el archivo PDF forzando la descarga directa en el navegador
+            return org.springframework.http.ResponseEntity.ok()
+                    .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"")
+                    .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                    .body(recurso);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    // ========================================================
+    // SECCIÓN EXACTAMENTE IGUAL PERO PARA MÚSICA
+    // ========================================================
+
+    // 1. Muestra la pantalla con la lista de canciones únicas de la tabla 'music'
+    @GetMapping("/musica")
+    public String mostrarPaginaMusica(HttpSession session, Model model) {
+        // Candado de seguridad obligatorio
+        User usuarioActivo = (User) session.getAttribute("usuarioSesion");
+        if (usuarioActivo == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            // SÚPER SIMPLE: Traemos solo las canciones reales de la tabla 'music' sin duplicados
+            String sql = "SELECT * FROM music";
+            java.util.List<java.util.Map<String, Object>> listaMusica = jdbcTemplate.queryForList(sql);
+            
+            model.addAttribute("canciones", listaMusica);
+            model.addAttribute("usuarioNombre", usuarioActivo.getUsername());
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al cargar la música: " + e.getMessage());
+        }
+
+        return "musica"; // Buscará el archivo templates/musica.html
+    }
+
+    // 2. Registra la descarga en 'music_reservations' y despacha el archivo de audio
+    @GetMapping("/descargar-musica")
+    public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> descargarYReservarMusica(
+            @RequestParam("id") Long musicId, HttpSession session) {
+        
+        User usuarioActivo = (User) session.getAttribute("usuarioSesion");
+        if (usuarioActivo == null) {
+            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).build();
+        }
+
+        try {
+            // 1. Insertar la reserva en la tabla de música con las columnas correctas
+            java.time.LocalDateTime fechaActual = java.time.LocalDateTime.now();
+            String sqlReserva = "INSERT INTO music_reservations (user_id, music_id, reservation_date) VALUES (?, ?, ?)";
+            jdbcTemplate.update(sqlReserva, usuarioActivo.getId(), musicId, fechaActual);
+
+            // 2. Buscar la ruta del archivo guardada en la base de datos (asumiendo columna mp3_path o similar, ajústala si se llama music_path)
+            String sqlFichero = "SELECT mp3_path FROM music WHERE id = ?";
+            String mp3PathBd = jdbcTemplate.queryForObject(sqlFichero, String.class, musicId);
+
+            // 3. Extraemos el nombre del archivo para buscarlo en tu carpeta física
+            String nombreFichero = mp3PathBd.substring(mp3PathBd.lastIndexOf("/") + 1);
+            
+            // Apuntamos a la carpeta física real "uploads/musica" (o como la tengas estructurada)
+            java.nio.file.Path rutaArchivoFisico = java.nio.file.Paths.get("uploads/musica").resolve(nombreFichero).normalize();
+            org.springframework.core.io.Resource recurso = new org.springframework.core.io.UrlResource(rutaArchivoFisico.toUri());
+
+            if (!recurso.exists()) {
+                return org.springframework.http.ResponseEntity.notFound().build();
+            }
+
+            // 4. Despachamos el archivo forzando la descarga directa en el navegador
+            return org.springframework.http.ResponseEntity.ok()
+                    .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"")
+                    .contentType(org.springframework.http.MediaType.parseMediaType("audio/mpeg"))
+                    .body(recurso);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // 2. Muestra la pantalla del formulario de login cuando te echa un candado
@@ -107,11 +250,11 @@ public class MainController {
     // 2. Procesa la subida solo si estás logueado
     @PostMapping("/recursos/subir-libro")
     public String procesarSubirLibro(
-            @RequestParam("titulo") String title,             // Mapeado a la columna 'title'
-            @RequestParam("genero") String genre,             // Mapeado a la columna 'genre'
-            @RequestParam("autor") String author,             // Mapeado a la columna 'author'
+            @RequestParam("titulo") String title, // Mapeado a la columna 'title'
+            @RequestParam("genero") String genre, // Mapeado a la columna 'genre'
+            @RequestParam("autor") String author, // Mapeado a la columna 'author'
             @RequestParam("fechaLanzamiento") String release_year, // Mapeado a 'release_year'
-            @RequestParam("descripcion") String description,   // Mapeado a 'description'
+            @RequestParam("descripcion") String description, // Mapeado a 'description'
             @RequestParam("libroPdf") org.springframework.web.multipart.MultipartFile pdf_path, // El archivo PDF
             HttpSession session, Model model) {
 
@@ -136,13 +279,14 @@ public class MainController {
 
             // 2. Insertar en tu tabla real 'books' de Docker con las columnas en inglés
             String sql = "INSERT INTO books (title, genre, pdf_path, author, release_year, description) VALUES (?, ?, ?, ?, ?, ?)";
-            
+
             // Ejecutamos pasándole las variables en el orden exacto de la consulta SQL
             jdbcTemplate.update(sql, title, genre, rutaCompletaBd, author, release_year, description);
 
             model.addAttribute("exito", "¡Libro guardado y PDF enlazado correctamente!");
-            
-            // 3. ¡Mágia! Redirigimos directamente a la página principal tras subirlo con éxito
+
+            // 3. ¡Mágia! Redirigimos directamente a la página principal tras subirlo con
+            // éxito
             return "redirect:/";
 
         } catch (Exception e) {
@@ -197,7 +341,7 @@ public class MainController {
 
             // Insertar en tu tabla 'music' de Docker
             String sql = "INSERT INTO music (title, genre, artist_or_band, release_year, album, mp3_path) VALUES (?, ?, ?, ?, ?, ?)";
-            
+
             // CAMBIO AQUÍ: Cambiamos 'nombreArchivo' por 'rutaCompletaBd' al final
             jdbcTemplate.update(sql, title, genre, artist_or_band, release_year, album, rutaCompletaBd);
 
@@ -209,4 +353,5 @@ public class MainController {
             return "subir-musica";
         }
     }
+
 }

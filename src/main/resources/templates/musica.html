@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sifitecha - Biblioteca de Música</title>
+   <link rel="stylesheet" href="/css/musica.css">
+</head>
+<body>
+
+    <!-- Logo Superior -->
+    <div class="logo-header">
+        <img src="/images/Captura_desde_2026-05-26_20-13-17-removebg-preview.png" alt="Logo">
+    </div>
+
+    <!-- Buscador Falso -->
+    <div class="search-bar-container">
+        🔍 Buscar Música
+    </div>
+
+<div class="music-list">
+        
+        <a th:each="cancion : ${canciones}" th:href="@{/descargar-musica(id=${cancion.id})}" class="music-row-card">
+            
+            <div class="txt-big" th:text="${cancion.genre}">Género</div>
+            <div class="txt-medium" th:text="${cancion.artist_or_band}">Artista / Banda</div>
+            <div class="txt-medium" th:text="${cancion.title}">Título</div>
+            <div class="txt-desc">Desc</div>
+            
+            <div class="txt-normal">Fecha de descarga</div>
+            <div class="txt-small" th:text="${usuarioNombre}">Nombre usuario</div>
+            <div class="txt-medium" th:text="${cancion.release_year}">Año</div>
+            
+            <div class="txt-small" style="text-align: right; font-style: italic; color: #666;">🎵 Audio MP3</div>
+        </a>
+
+    </div>
+
+    <!-- MENÚ INFERIOR DE NAVEGACIÓN -->
+    <div class="bottom-nav">
+        <a th:href="@{/}">Principio</a>
+        <a th:href="@{/musica}" class="active">Música</a>
+        <a th:href="@{/subir-musica}">Subir Cancion</a>
+        <a th:href="@{/subir-libro}">Subir Libro</a>
+    </div>
+
+</body>
+</html>
