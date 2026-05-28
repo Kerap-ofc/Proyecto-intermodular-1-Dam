@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Iniciar Sesión</title>
     <link rel="stylesheet" href="/css/login.css">
 </head>
+
 <body>
 
     <div class="login-card">
@@ -12,7 +14,8 @@
             <img src="/images/Captura_desde_2026-05-26_20-13-17-removebg-preview.png" alt="Logo">
         </div>
 
-        <div class="error-message" th:if="${error}" th:text="${error}" style="color: #e74c3c; font-weight: bold; margin-bottom: 15px; text-align: center;"></div>
+        <div class="error-message" th:if="${error}" th:text="${error}"
+            style="color: #e74c3c; font-weight: bold; margin-bottom: 15px; text-align: center;"></div>
 
         <form th:action="@{/login}" method="post">
             <div class="input-group">
@@ -29,9 +32,10 @@
         </form>
 
         <div class="register-text">
-            ¿No tienes cuenta? <a href="/registro">Crear cuenta</a>
+            ¿No tienes cuenta? <a th:href="@{/registro}">Crear cuenta</a>
         </div>
     </div>
 
 </body>
+
 </html>

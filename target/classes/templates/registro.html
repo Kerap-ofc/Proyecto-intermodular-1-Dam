@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Cuenta - Sifitecha</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo-box">
+            <img src="/images/Captura_desde_2026-05-26_20-13-17-removebg-preview.png" alt="Logo">
+        </div>
+
+        <div class="error-message" th:if="${error}" th:text="${error}" style="color: #e74c3c; font-weight: bold; margin-bottom: 15px; text-align: center;"></div>
+
+        <form th:action="@{/registro}" method="post">
+            
+            <div class="input-group">
+                <label>Nombre de usuario</label>
+                <input type="text" name="username" required autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>Contraseña</label>
+                <input type="password" name="password" required>
+            </div>
+
+            <div class="input-group">
+                <label>Nombre</label>
+                <input type="text" name="nombre" required autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>Apellidos</label>
+                <input type="text" name="apellidos" required autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" name="email" required autocomplete="off">
+            </div>
+
+            <button type="submit" class="btn-submit" style="margin-top: 15px;">Crear Cuenta</button>
+        </form>
+
+        <div class="register-text" style="margin-top: 15px;">
+            ¿Ya tienes cuenta? <a href="/login">Inicia sesión</a>
+        </div>
+    </div>
+
+</body>
+</html>
